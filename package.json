@@ -79,7 +79,7 @@
     "pretest": "npm run compile-tests && npm run compile && npm run lint",
     "lint": "eslint src",
     "test": "vscode-test",
-    "vsix": "vsce package"
+    "vsix": "npx @vscode/vsce package"
   },
   "devDependencies": {
     "@vscode/vsce": "^3.2.2",
