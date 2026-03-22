@@ -5,8 +5,8 @@ Bring local oMLX models into VS Code Copilot Chat. This extension integrates oML
 ## Features
 
 - **Local Model Integration**: Use locally hosted oMLX models in Copilot Chat
-- **Model Discovery**: Browse and download models from HuggingFace via oMLX
-- **Model Management**: Load/unload models, configure settings
+- **Model Discovery**: Lists oMLX models in the Copilot Chat picker (browse and download via oMLX admin dashboard at `/admin`)
+- **Model Selection**: Choose from available oMLX models in chat; load/unload and configure settings via oMLX admin dashboard
 - **OpenAI-Compatible API**: Uses oMLX's OpenAI-compatible chat completions API
 - **Streaming Support**: Real-time response streaming from local models
 
@@ -86,7 +86,7 @@ This extension contributes the following settings:
 
 | Command | Description |
 |---------|-------------|
-| `oMLX: Manage Models` | Open model management interface |
+| `oMLX: Manage Models` | Open Copilot Chat (model picker) |
 | `oMLX: Check Server Health` | Check if oMLX server is running |
 
 ## Using oMLX Models in Copilot Chat
@@ -132,10 +132,10 @@ Models are managed through oMLX's admin dashboard:
 
 ### Step 5: Load Models into Memory
 
-In the oMLX admin dashboard:
+Models load on-demand when you select one in Copilot Chat and send a message. You can also pre-load in the oMLX admin dashboard:
 
 1. **View Loaded Models**: Models appear in the main dashboard
-2. **Load a Model**: Click the model card to load it
+2. **Load a Model**: Click the model card to load it (or rely on on-demand loading when you chat)
 3. **Model Status**: Green badge = loaded, Gray = not loaded
 
 ### Step 6: Use Models in Copilot Chat
@@ -175,7 +175,7 @@ npm test
 ## Known Issues
 
 - Requires oMLX server to be running before use
-- Model loading/unloading depends on oMLX admin API availability
+- Model list uses oMLX admin API when available (with fallback to `/v1/models`); per-model context size is only available when admin API is accessible
 
 ## Release Notes
 
@@ -184,7 +184,7 @@ npm test
 Initial release of oMLX Copilot Chat Extension.
 
 - Local oMLX model integration
-- Model discovery and management
+- Model discovery (lists oMLX models in Copilot Chat picker)
 - OpenAI-compatible API support
 - Streaming response support
 

@@ -123,8 +123,6 @@ export class OMLXChatModelProvider implements vscode.LanguageModelChatProvider {
       model: string;
       messages: typeof openaiMessages;
       stream: boolean;
-      temperature?: number;
-      max_tokens?: number;
       tools?: Array<{
         type: string;
         function: {
@@ -138,16 +136,6 @@ export class OMLXChatModelProvider implements vscode.LanguageModelChatProvider {
       messages: openaiMessages,
       stream: true,
     };
-
-    // Add temperature if specified
-    if (options.modelOptions?.temperature !== undefined) {
-      requestBody.temperature = options.modelOptions.temperature;
-    }
-
-    // Add max_tokens if specified
-    if (options.modelOptions?.maxTokens !== undefined) {
-      requestBody.max_tokens = options.modelOptions.maxTokens;
-    }
 
     // Add tools if specified
     if (options.tools && options.tools.length > 0) {

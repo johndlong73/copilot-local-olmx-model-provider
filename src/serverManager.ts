@@ -210,53 +210,53 @@ export class ServerManager {
   }
 
   /**
+   * Map admin model to LanguageModelChatInformation
+   */
+  private _mapAdminModelToChatInfo(model: { id: string; model_type?: string; engine_type?: string; settings?: ModelSettings }): vscode.LanguageModelChatInformation {
+    const capabilities = this._determineCapabilities(model.model_type, model.engine_type);
+    const { maxInputTokens, maxOutputTokens } = this._getTokenLimits(model.settings);
+    return {
+      id: model.id,
+      name: model.id,
+      family: 'omlx',
+      version: '1.0.0',
+      maxInputTokens,
+      maxOutputTokens,
+      capabilities,
+      isUserSelectable: true,
+      category: { label: 'oMLX', order: 100 },
+    };
+  }
+
+  /**
    * Get list of available models with capabilities
+   *
+   * Uses GET /admin/api/models which returns models with settings embedded.
+   * Falls back to GET /v1/models with default token limits when admin API is unavailable.
    */
   async getModels(): Promise<vscode.LanguageModelChatInformation[]> {
     try {
+      // Prefer admin API - returns models with settings in one call (GET /admin/api/models/{id}/settings does not exist)
+      const adminResponse = await fetch(`${this._config.serverUrl}/admin/api/models`, {
+        headers: this._getAuthHeaders(),
+      });
+
+      if (adminResponse.ok) {
+        const adminData = await adminResponse.json() as AdminModelsResponse;
+        return adminData.models.map((m) => this._mapAdminModelToChatInfo(m));
+      }
+
+      // Fallback: use /v1/models when admin API unavailable (e.g. 401, 503)
       const response = await fetch(`${this._config.serverUrl}/v1/models`, {
         headers: this._getAuthHeaders(),
       });
-      
+
       if (!response.ok) {
         throw new Error(`Server returned ${response.status}: ${response.statusText}`);
       }
 
       const data = await response.json() as ModelsResponse;
-      
-      // Fetch settings for each model to get capabilities
-      const modelPromises = data.data.map(async (model) => {
-        try {
-          const settingsResponse = await fetch(
-            `${this._config.serverUrl}/admin/api/models/${encodeURIComponent(model.id)}/settings`,
-            { headers: this._getAuthHeaders() }
-          );
-          
-          if (settingsResponse.ok) {
-            const settings = await settingsResponse.json() as ModelSettingsResponse;
-            const capabilities = this._determineCapabilities(
-              settings.model_type,
-              settings.engine_type
-            );
-            const { maxInputTokens, maxOutputTokens } = this._getTokenLimits(settings.settings);
-            
-            return {
-              id: model.id,
-              name: model.id,
-              family: 'omlx',
-              version: '1.0.0',
-              maxInputTokens,
-              maxOutputTokens,
-              capabilities: capabilities,
-              isUserSelectable: true,
-              category: { label: 'oMLX', order: 100 },
-            };
-          }
-        } catch (e) {
-          console.error(`Failed to get settings for ${model.id}:`, e);
-        }
-        
-        // Fallback if settings fetch fails - infer capabilities from model ID for common model families
+      return data.data.map((model) => {
         const fallbackCapabilities = this._inferCapabilitiesFromModelId(model.id);
         const { maxInputTokens, maxOutputTokens } = this._getTokenLimits(undefined);
         return {
@@ -271,8 +271,6 @@ export class ServerManager {
           category: { label: 'oMLX', order: 100 },
         };
       });
-      
-      return await Promise.all(modelPromises);
     } catch (e) {
       console.error('Failed to get models:', e);
       return [];
@@ -281,13 +279,31 @@ export class ServerManager {
 
   /**
    * Get model details with capabilities
+   *
+   * Uses GET /admin/api/models to find the model with settings (GET /admin/api/models/{id}/settings does not exist).
+   * Falls back to GET /v1/models/{id} with default token limits when admin API is unavailable.
    */
   async getModelDetails(modelId: string): Promise<vscode.LanguageModelChatInformation | null> {
     try {
+      // Prefer admin API - returns models with settings
+      const adminResponse = await fetch(`${this._config.serverUrl}/admin/api/models`, {
+        headers: this._getAuthHeaders(),
+      });
+
+      if (adminResponse.ok) {
+        const adminData = await adminResponse.json() as AdminModelsResponse;
+        const adminModel = adminData.models.find((m) => m.id === modelId);
+        if (adminModel) {
+          return this._mapAdminModelToChatInfo(adminModel);
+        }
+        return null;
+      }
+
+      // Fallback: use /v1/models/{id} when admin API unavailable
       const response = await fetch(`${this._config.serverUrl}/v1/models/${encodeURIComponent(modelId)}`, {
         headers: this._getAuthHeaders(),
       });
-      
+
       if (!response.ok) {
         if (response.status === 404) {
           return null;
@@ -296,39 +312,6 @@ export class ServerManager {
       }
 
       const data = await response.json() as { id: string };
-      
-      // Fetch settings to get capabilities
-      try {
-        const settingsResponse = await fetch(
-          `${this._config.serverUrl}/admin/api/models/${encodeURIComponent(modelId)}/settings`,
-          { headers: this._getAuthHeaders() }
-        );
-        
-        if (settingsResponse.ok) {
-          const settingsResp = await settingsResponse.json() as ModelSettingsResponse;
-          const capabilities = this._determineCapabilities(
-            settingsResp.model_type,
-            settingsResp.engine_type
-          );
-          const { maxInputTokens, maxOutputTokens } = this._getTokenLimits(settingsResp.settings);
-          
-          return {
-            id: data.id,
-            name: data.id,
-            family: 'omlx',
-            version: '1.0.0',
-            maxInputTokens,
-            maxOutputTokens,
-            capabilities: capabilities,
-            isUserSelectable: true,
-            category: { label: 'oMLX', order: 100 },
-          };
-        }
-      } catch (e) {
-        console.error(`Failed to get settings for ${modelId}:`, e);
-      }
-      
-      // Fallback if settings fetch fails
       const fallbackCapabilities = this._inferCapabilitiesFromModelId(data.id);
       const { maxInputTokens, maxOutputTokens } = this._getTokenLimits(undefined);
       return {

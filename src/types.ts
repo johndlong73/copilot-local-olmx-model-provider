@@ -65,75 +65,6 @@ export interface ModelSettings {
 }
 
 /**
- * Download task from oMLX admin API
- */
-export interface DownloadTask {
-  task_id: string;
-  repo_id: string;
-  status: DownloadStatus;
-  progress: number;
-  total_size: number;
-  downloaded_size: number;
-  error: string;
-  created_at: number;
-  started_at: number;
-  completed_at: number;
-}
-
-/**
- * Download status enum
- */
-export enum DownloadStatus {
-  PENDING = 'pending',
-  DOWNLOADING = 'downloading',
-  COMPLETED = 'completed',
-  FAILED = 'failed',
-  CANCELLED = 'cancelled',
-}
-
-/**
- * HuggingFace model search result
- */
-export interface HFModel {
-  repo_id: string;
-  name: string;
-  downloads: number;
-  likes: number;
-  trending_score: number;
-  size: number;
-  size_formatted: string;
-  params: number | null;
-  params_formatted: string | null;
-}
-
-/**
- * HuggingFace model info
- */
-export interface HFModelInfo {
-  repo_id: string;
-  name: string;
-  model_card: string;
-  description: string;
-  files: HFModelFile[];
-  tags: string[];
-  pipeline_tag: string;
-  params: number | null;
-  params_formatted: string | null;
-  size: number;
-  size_formatted: string;
-  downloads: number;
-  likes: number;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface HFModelFile {
-  name: string;
-  size: number;
-  size_formatted: string;
-}
-
-/**
  * Server health status
  */
 export interface ServerHealth {
@@ -161,58 +92,6 @@ export interface ModelsResponse {
  */
 export interface AdminModelsResponse {
   models: OMLXAdminModel[];
-}
-
-/**
- * Response from oMLX /admin/api/hf/search endpoint
- */
-export interface HFSearchResponse {
-  models: HFModel[];
-  total: number;
-}
-
-/**
- * Response from oMLX /admin/api/hf/recommended endpoint
- */
-export interface HFRecommendedResponse {
-  trending: HFModel[];
-  popular: HFModel[];
-}
-
-/**
- * Response from oMLX /admin/api/hf/download endpoint
- */
-export interface HFDownloadResponse {
-  success: boolean;
-  task: DownloadTask;
-}
-
-/**
- * Response from oMLX /admin/api/hf/tasks endpoint
- */
-export interface HFTasksResponse {
-  tasks: DownloadTask[];
-}
-
-/**
- * Response from oMLX /admin/api/hf/model-info endpoint
- */
-export interface HFModelInfoResponse {
-  repo_id: string;
-  name: string;
-  model_card: string;
-  description: string;
-  files: HFModelFile[];
-  tags: string[];
-  pipeline_tag: string;
-  params: number | null;
-  params_formatted: string | null;
-  size: number;
-  size_formatted: string;
-  downloads: number;
-  likes: number;
-  created_at: string;
-  updated_at: string;
 }
 
 /**
@@ -318,14 +197,6 @@ export interface UpdateModelSettingsRequest {
   ttl_seconds?: number;
   is_pinned?: boolean;
   is_default?: boolean;
-}
-
-/**
- * Request body for starting a download
- */
-export interface DownloadRequest {
-  repo_id: string;
-  hf_token?: string;
 }
 
 /**
