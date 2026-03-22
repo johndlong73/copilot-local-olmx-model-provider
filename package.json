@@ -1,6 +1,7 @@
 {
   "name": "copilot-local-model-provider",
   "displayName": "oMLX",
+  "publisher": "your-publisher-id",
   "description": "Bring local oMLX models into VS Code Copilot Chat",
   "version": "0.0.1",
   "engines": {
@@ -77,9 +78,11 @@
     "watch-tests": "tsc -p . -w --outDir out",
     "pretest": "npm run compile-tests && npm run compile && npm run lint",
     "lint": "eslint src",
-    "test": "vscode-test"
+    "test": "vscode-test",
+    "vsix": "vsce package"
   },
   "devDependencies": {
+    "@vscode/vsce": "^3.2.2",
     "@types/vscode": "^1.110.0",
     "@types/mocha": "^10.0.10",
     "@types/node": "22.x",
