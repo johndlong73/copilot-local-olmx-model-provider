@@ -16,9 +16,7 @@
   ],
   "activationEvents": [
     "onLanguageModelChatProvider:omlx",
-    "onCommand:omlx.manage",
-    "onCommand:omlx.checkHealth",
-    "*"
+    "onStartupFinished"
   ],
   "main": "./dist/extension.js",
   "contributes": {
