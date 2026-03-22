@@ -1,7 +1,7 @@
 {
-  "name": "copilot-local-model-provider",
-  "displayName": "oMLX",
-  "publisher": "your-publisher-id",
+  "name": "copilot-local-olmx-model-provider",
+  "displayName": "copilot-local-olmx-model-provider",
+  "publisher": "JohnLong",
   "description": "Bring local oMLX models into VS Code Copilot Chat",
   "version": "0.0.1",
   "engines": {
@@ -54,7 +54,7 @@
     ],
     "configuration": {
       "type": "object",
-      "title": "oMLX",
+      "title": "oMLX Copilot Chat",
       "properties": {
         "omlx.serverUrl": {
           "type": "string",
