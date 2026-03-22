@@ -4,6 +4,10 @@
   "publisher": "JohnLong",
   "description": "Bring local oMLX models into VS Code Copilot Chat",
   "version": "0.0.1",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/johndlong73/copilot-local-olmx-model-provider"
+  },
   "engines": {
     "vscode": "^1.110.0"
   },
