@@ -1,7 +1,7 @@
 {
   "name": "copilot-local-model-provider",
-  "displayName": "copilot-local-model-provider",
-  "description": "Provides support for running OSS local models",
+  "displayName": "oMLX",
+  "description": "Bring local oMLX models into VS Code Copilot Chat",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.110.0"
@@ -9,15 +9,64 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [],
+  "activationEvents": [
+    "onLanguageModelChatProvider:omlx",
+    "onCommand:omlx.manage",
+    "onCommand:omlx.checkHealth",
+    "*"
+  ],
   "main": "./dist/extension.js",
   "contributes": {
+    "languageModelChatProviders": [
+      {
+        "vendor": "omlx",
+        "displayName": "oMLX",
+        "managementCommand": "omlx.manage",
+        "configuration": {
+          "type": "object",
+          "properties": {
+            "url": {
+              "type": "string",
+              "description": "oMLX server URL",
+              "default": "http://localhost:8000",
+              "title": "Server URL"
+            },
+            "apiKey": {
+              "type": "string",
+              "secret": true,
+              "description": "API key (if oMLX server requires authentication)",
+              "title": "API Key"
+            }
+          }
+        }
+      }
+    ],
     "commands": [
       {
-        "command": "copilot-local-model-provider.helloWorld",
-        "title": "Hello World"
+        "command": "omlx.manage",
+        "title": "Manage oMLX Models"
+      },
+      {
+        "command": "omlx.checkHealth",
+        "title": "oMLX: Check Server Health"
       }
-    ]
+    ],
+    "configuration": {
+      "type": "object",
+      "title": "oMLX",
+      "properties": {
+        "omlx.serverUrl": {
+          "type": "string",
+          "default": "http://localhost:8000",
+          "description": "oMLX server URL"
+        },
+        "omlx.apiKey": {
+          "type": "string",
+          "default": "",
+          "description": "oMLX API key (if configured)"
+        }
+      }
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run package",
